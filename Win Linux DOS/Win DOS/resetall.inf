@@ -1,0 +1,9 @@
+[version] 
+signature="$chicago$" 
+[defaultinstall] 
+delReg=delete me 
+[delete me] 
+HKCU, 
+"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system","disableregistrytools" 
+HKLM, 
+"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system","disableregistrytools" 
