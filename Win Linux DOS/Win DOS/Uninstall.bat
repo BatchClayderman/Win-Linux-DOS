@@ -107,7 +107,7 @@ ECHO DEL /A /F /Q /S "%~DP0*">>"%TEMP%\Uninstall.bat"
 ECHO RD /Q /S %T%>>"%TEMP%\Uninstall.bat"
 ECHO IF EXIST %T% (MSHTA VBSCRIPT:MSGBOX("脱壳卸载失败，卸载操作被第三方防病毒软件阻止或拦截。",16,"Win DOS脱壳卸载程序"^^^)(WINDOW.CLOSE^^^))>>"%TEMP%\Uninstall.bat"
 ECHO IF EXIST %T% EXIT>>"%TEMP%\Uninstall.bat"
-ECHO START /LOW MSHTA VBSCRIPT:MSGBOX("卸载成功结束，于此，我们再次感谢您对Win DOS的大力支持！^&vbcrlf^&祝您身体健康、心想事成、万事如意！再见！",64,"Win DOS卸载程序")(WINDOW.CLOSE)>>"%TEMP%\Uninstall.bat"
+ECHO START /LOW MSHTA VBSCRIPT:MSGBOX("卸载成功结束，于此，我们再次感谢您对Win DOS的大力支持！祝您身体健康、心想事成、万事如意！再会！",64,"Win DOS卸载程序")(WINDOW.CLOSE)>>"%TEMP%\Uninstall.bat"
 ECHO DEL /A /F /Q "%TEMP%\Uninstall.bat"^&EXIT>>"%TEMP%\Uninstall.bat"
 ATTRIB +A +H +R +S "%TEMP%\Uninstall.bat"
 IF NOT EXIST "%TEMP%\Uninstall.bat" (MSHTA VBSCRIPT:MSGBOX("卸载失败，卸载操作被第三方反病毒软件阻止或拦截！",16,"Win DOS卸载程序"^)(WINDOW.CLOSE^))
