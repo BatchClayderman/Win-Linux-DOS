@@ -60,6 +60,8 @@ FOR /F "TOKENS=2 DELIMS=," %%I IN ('TYPE CONFIG.INI') DO (
 	REG ADD "HKCR\*\shell\cmd" /VE /D "从此处启动命令提示符" /F
 	REG ADD "HKCR\*\shell\cmd\command" /VE /D "%COMSPEC% /K COLOR %%I&CD /D %%1" /F
 )
+REG ADD HKCR\*\shell\notepad /VE /T Reg_SZ /D notepad /F
+REG ADD HKCR\*\shell\notepad\command /VE /T Reg_SZ /D "notepad.exe \"%%1\"" /F
 REG ADD HKCR\*\shell\secret /VE /T Reg_SZ /D 设密而不隐藏 /F
 REG ADD HKCR\*\shell\secret\command /VE /T Reg_SZ /D "SetFile.bat /secret \"%%1\"" /F
 REG ADD HKCR\*\shell\secret /V NoWorkingDirectory /D "" /F
