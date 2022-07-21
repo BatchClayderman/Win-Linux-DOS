@@ -10,8 +10,9 @@ GOTO RUN
 CLS
 ECHO 请输入标准文件全路径或将文件拖拽至此处并按下回车键：
 SET /P FILE=
-IF "%FILE:~0,1%"=="0" (EXIT)
-XCOPY %FILE% "C:\Documents and Settings\Administrator\「开始」菜单\程序\启动\" /V /Y
-REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /V /Q %FILE%
+IF %FILE%==0 EXIT
+VER|FIND /I "XP"
+IF %ERRORLEVEL%==0 (XCOPY %FILE% "C:\Documents and Settings\Administrator\「开始」菜单\程序\启动\" /V /Y)
+FOR %%I IN (%FILE%) DO (REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /V "%%~NI" /D %FILE%)
 PAUSE
 GOTO RUN
