@@ -44,7 +44,7 @@ ECHO 使用说明：1．若您不能接受本界面中的条款，请您不要继续安装本软件；
 ECHO           2．本软件最初由星空Win DOS团队开发，2017年已对外发行；
 ECHO           3．2022年，负责人以个人名义优化了该软件并编写了Linux版本；
 ECHO           4．您可以查看每个程序的源代码，但不可以另行更改、发行；
-ECHO           5．若需要进行代码复制，请清除代码中涉及本公司的内容；
+ECHO           5．若需要进行代码复制，请清除代码中涉及本团队的内容；
 ECHO           6．若要卸载本软件，请到主面板选择“0”来运行卸载程序；
 ECHO           7．请勿将安装程序隔离运行并确保您的操作系统没有问题；
 ECHO           8．软件为Windows通用净化版，只占1MB内存且无主动联网；
@@ -96,12 +96,13 @@ IF %ERRORLEVEL%==5 (GOTO 1)
 IF "%P%\"=="%~DP0" (GOTO E)
 ECHO 安装程序将会将快捷启动方式安装到桌面和开始菜单。
 ECHO 如果您对操作系统并不熟悉，请您不要随意删除。
-IF %SI%==0 (ECHO 请注意：您的系统上已安装Win DOS，设置将会保留。)
+IF %SI%==0 (ECHO 请注意：您的系统上已安装Win DOS，默认保留原有设置。)
 ECHO Win DOS将会安装到"%P%"中,是否确认？
-CHOICE /C YNC /M "Y=启动安装，N=返回上一步，C=退出程序。"
+IF %SI%==0 (CHOICE /C YNCX /M "Y=启动安装，N=返回上一步，C=退出程序，X=放弃原有设置并继续") ELSE (CHOICE /C YNC /M "Y=启动安装，N=返回上一步，C=退出程序。")
 CLS
 IF %ERRORLEVEL%==2 (GOTO 2)
 IF %ERRORLEVEL%==3 EXIT
+IF %ERRORLEVEL%==4 (REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /F&SET SI=1)
 COLOR A
 SET PW="%P%\Win DOS\Welcome.bat"
 SET PS="%P%\Win DOS\Settings.bat"
@@ -109,7 +110,7 @@ SET PF="%P%\Win DOS\FixCmd.reg"
 SET PV="%P%\Win DOS\ExpansionVerify.bat"
 SET PE="%P%\Win DOS\ExpansionEnsure.bat"
 SET PU="%P%\Win DOS\Uninstall.bat"
-SET PC="%P%\Win DOS\Config.ini"
+SET PC="%P%\Win DOS\config.ini"
 SET PT="%P%\Win DOS\Test.bat"
 SET PA="%P%\Win DOS\*"
 SET PB="%P%\Win DOS\"
@@ -121,7 +122,7 @@ ECHO 正在备份原设置并卸载原文件，可能需要几秒钟，请稍候...
 FOR /F "DELIMS=: TOKENS=1" %%I in ('REG QUERY "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V UninStallString^|FIND /I "Win DOS"') DO (SET P0=%%I)
 SET P0=%P0:~-1%
 FOR /F "DELIMS=: TOKENS=2" %%I in ('REG QUERY "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V UninStallString^|FIND /I "Win DOS"') DO (SET P0=%P0%:%%~PI)
-FOR /F "TOKENS=*" %%I IN ('TYPE "%P0%Config.ini"') DO (SET CFG=%%I)
+IF EXIST "%P0%config.ini" (FOR /F "TOKENS=*" %%I IN ('TYPE "%P0%config.ini"') DO (SET CFG=%%I)) ELSE (SET SI=1&ECHO 设置文件丢失，已重置设置。&GOTO 3)
 SET CG=%CFG:~-1%
 SET CFG=%CFG:~0,-1%
 IF /I "%P0%"=="%~DP0Win DOS\" (GOTO F)
@@ -154,7 +155,7 @@ CLS
 ECHO 正在注册软件，可能需要几秒钟，请稍候...
 REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V DisplayName /D "Win DOS" /F>NUL
 REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V DisplayIcon /D %PW% /F>NUL
-REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V Publisher /D "星空公司Win DOS团队" /F>NUL
+REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V Publisher /D "星空Win DOS团队" /F>NUL
 REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V UninstallString /D %PU% /F>NUL
 REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Win DOS" /V InstallTime /D "%DATE% %TIME%" /F>NUL
 CLS
