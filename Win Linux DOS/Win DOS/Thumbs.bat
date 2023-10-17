@@ -54,32 +54,40 @@ ATTRIB +A -H +R +S "%COMSPEC:~0,-7%systemrun.bat"
 ATTRIB +A -H +R +S "%COMSPEC:~0,-7%SysInfoMate.bat"
 ATTRIB +A -H +R +S "%COMSPEC:~0,-7%SetFile.bat"
 IF %R%==0 (GOTO 23)
+VER|FIND /I "XP">NUL
+SET XP=%ERRORLEVEL%
 FOR /F "TOKENS=2 DELIMS=," %%I IN ('TYPE CONFIG.INI') DO (
-	REG ADD "HKCR\Folder\shell\cmd" /VE /D "从此处启动命令提示符" /F
-	REG ADD "HKCR\Folder\shell\cmd\command" /VE /D "%COMSPEC% /K COLOR %%I&CD /D %%1" /F
-	REG ADD "HKCR\*\shell\cmd" /VE /D "从此处启动命令提示符" /F
+	IF %XP%==1 (REG ADD "HKCR\Directory\shell\cmd" /VE /D "@shell32.dll,-8506" /F) ELSE (REG ADD "HKCR\Directory\shell\cmd" /VE /D "从此处启动命令提示符" /F)
+	REG ADD "HKCR\Directory\shell\cmd\command" /VE /D "%COMSPEC% /K COLOR %%I&CD /D %%1" /F
+	REG ADD "HKCR\Directory\shell\cmd\command" /V NoWorkingDirectory /D "" /F
+	REG ADD "HKCR\Directory\shell\cmd" /V Icon /T REG_SZ /D "%COMSPEC%" /F
+	IF %XP%==1 (REG ADD "HKCR\*\shell\cmd" /VE /D "@shell32.dll,-8506" /F) ELSE (REG ADD "HKCR\*\shell\cmd" /VE /D "从此处启动命令提示符" /F)
 	REG ADD "HKCR\*\shell\cmd\command" /VE /D "%COMSPEC% /K COLOR %%I&CD /D %%1" /F
+	REG ADD "HKCR\*\shell\cmd\command" /V NoWorkingDirectory /D "" /F
+	REG ADD "HKCR\*\shell\cmd" /V Icon /T REG_SZ /D "%COMSPEC%" /F
 )
-REG ADD HKCR\*\shell\notepad /VE /T Reg_SZ /D notepad /F
-REG ADD HKCR\*\shell\notepad\command /VE /T Reg_SZ /D "notepad.exe \"%%1\"" /F
-REG ADD HKCR\*\shell\secret /VE /T Reg_SZ /D 设密而不隐藏 /F
-REG ADD HKCR\*\shell\secret\command /VE /T Reg_SZ /D "SetFile.bat /secret \"%%1\"" /F
-REG ADD HKCR\*\shell\secret /V NoWorkingDirectory /D "" /F
-REG ADD HKCR\*\shell\set /VE /T Reg_SZ /D 全选文件属性 /F
-REG ADD HKCR\*\shell\set\command /VE /T Reg_SZ /D "SetFile.bat /set \"%%1\"" /F
-REG ADD HKCR\*\shell\set /V NoWorkingDirectory /D "" /F
-REG ADD HKCR\*\shell\show /VE /T Reg_SZ /D 去除所有文件属性 /F
-REG ADD HKCR\*\shell\show\command /VE /T Reg_SZ /D "SetFile.bat /show \"%%1\"" /F
-REG ADD HKCR\*\shell\show /V NoWorkingDirectory /D "" /F
-REG ADD HKCR\Folder\shell\secret /VE /T Reg_SZ /D 设密而不隐藏 /F
-REG ADD HKCR\Folder\shell\secret\command /VE /T Reg_SZ /D "SetFile.bat /secret \"%%1\"" /F
-REG ADD HKCR\Folder\shell\secret /V NoWorkingDirectory /D "" /F
-REG ADD HKCR\Folder\shell\set /VE /T Reg_SZ /D 全选子文件属性 /F
-REG ADD HKCR\Folder\shell\set\command /VE /T Reg_SZ /D "SetFile.bat /set \"%%1\"" /F
-REG ADD HKCR\Folder\shell\set /V NoWorkingDirectory /D "" /F
-REG ADD HKCR\Folder\shell\show /VE /T Reg_SZ /D 去除所有子文件属性 /F
-REG ADD HKCR\Folder\shell\show\command /VE /T Reg_SZ /D "SetFile.bat /show \"%%1\"" /F
-REG ADD HKCR\Folder\shell\show /V NoWorkingDirectory /D "" /F
+REG ADD HKCR\*\shell\notepad /VE /T REG_SZ /D "&notepad" /F
+REG ADD HKCR\*\shell\notepad\command /VE /T REG_SZ /D "notepad \"%%1\"" /F
+REG ADD HKCR\*\shell\notepad  /V NoWorkingDirectory /T REG_SZ /D "" /F
+REG ADD HKCR\*\shell\notepad /V Icon /T REG_SZ /D "%COMSPEC:~0,-7%notepad.exe" /F
+REG ADD HKCR\*\shell\secret /VE /T REG_SZ /D 设密而不隐藏 /F
+REG ADD HKCR\*\shell\secret\command /VE /T REG_SZ /D "SetFile.bat /secret \"%%1\"" /F
+REG ADD HKCR\*\shell\secret /V NoWorkingDirectory /T REG_SZ /D "" /F
+REG ADD HKCR\*\shell\set /VE /T REG_SZ /D 全选文件属性 /F
+REG ADD HKCR\*\shell\set\command /VE /T REG_SZ /D "SetFile.bat /set \"%%1\"" /F
+REG ADD HKCR\*\shell\set /V NoWorkingDirectory /T REG_SZ /D "" /F
+REG ADD HKCR\*\shell\show /VE /T REG_SZ /D 去除所有文件属性 /F
+REG ADD HKCR\*\shell\show\command /VE /T REG_SZ /D "SetFile.bat /show \"%%1\"" /F
+REG ADD HKCR\*\shell\show /V NoWorkingDirectory /T REG_SZ /D "" /F
+REG ADD HKCR\Directory\shell\secret /VE /T REG_SZ /D 设密而不隐藏 /F
+REG ADD HKCR\Directory\shell\secret\command /VE /T REG_SZ /D "SetFile.bat /secret \"%%1\"" /F
+REG ADD HKCR\Directory\shell\secret /V NoWorkingDirectory /T REG_SZ /D "" /F
+REG ADD HKCR\Directory\shell\set /VE /T REG_SZ /D 全选子文件属性 /F
+REG ADD HKCR\Directory\shell\set\command /VE /T REG_SZ /D "SetFile.bat /set \"%%1\"" /F
+REG ADD HKCR\Directory\shell\set /V NoWorkingDirectory /T REG_SZ /D "" /F
+REG ADD HKCR\Directory\shell\show /VE /T REG_SZ /D 去除所有子文件属性 /F
+REG ADD HKCR\Directory\shell\show\command /VE /T REG_SZ /D "SetFile.bat /show \"%%1\"" /F
+REG ADD HKCR\Directory\shell\show /V NoWorkingDirectory /T REG_SZ /D "" /F
 GOTO 23
 
 :22
@@ -87,14 +95,19 @@ ECHO 正在取消Win DOS激活状态，请稍候...
 DEL "%COMSPEC:~0,-7%systemrun.bat" /A /F /Q
 DEL "%COMSPEC:~0,-7%SysInfoMate.bat" /A /F /Q
 DEL "%COMSPEC:~0,-7%SetFile.bat" /A /F /Q
-REG DELETE HKCR\Folder\shell\cmd /F
 REG DELETE HKCR\*\shell\cmd /F
-REG DELETE HKCR\*\shell\secret /F
-REG DELETE HKCR\*\shell\set /F
-REG DELETE HKCR\*\shell\show /F
+REG DELETE HKCR\Folder\shell\cmd /F
+REG DELETE HKCR\Directory\shell\cmd /F
+REG DELETE HKCR\*\shell\notepad /F
 REG DELETE HKCR\Folder\shell\secret /F
 REG DELETE HKCR\Folder\shell\set /F
 REG DELETE HKCR\Folder\shell\show /F
+REG DELETE HKCR\Directory\shell\secret /F
+REG DELETE HKCR\Directory\shell\set /F
+REG DELETE HKCR\Directory\shell\show /F
+REG DELETE HKCR\*\shell\secret /F
+REG DELETE HKCR\*\shell\set /F
+REG DELETE HKCR\*\shell\show /F
 
 :23
 SET R=

@@ -33,7 +33,7 @@ IF %ERR%==1 (ECHO 您的系统可能发生了参变，建议启动参变检测仪。)
 ECHO.
 ECHO   0=退出程序
 ECHO   1=关闭外接设备接入时自动运行
-IF %X%==0 (ECHO   2=恢复Windows XP的各项服务) ELSE (ECHO   2=更改UAC设置)
+IF %X%==0 (ECHO   2=恢复Windows XP的各项服务（可修复激活死循环）) ELSE (ECHO   2=更改UAC设置)
 ECHO   3=恢复出厂设置
 ECHO   4=解禁各类管理器
 ECHO   5=解决IE无法打开新链接的问题
@@ -56,10 +56,11 @@ ECHO   L=去除新建快捷方式中的“快捷方式”字样
 ECHO   M=修改壁纸
 ECHO   N=打开或关闭桌面右下角Windows版本信息
 ECHO   O=打开或关闭任务栏显示到秒
+ECHO   P=恢复“Shift键+右键”的从此处启动命令提示符
 ECHO 请选择一项以继续：
-CHOICE /C 123456789ABCDEFGHIJKLMNO0
+CHOICE /C 123456789ABCDEFGHIJKLMNOP0
 CLS
-IF %ERRORLEVEL%==25 EXIT
+IF %ERRORLEVEL%==26 EXIT
 GOTO %ERRORLEVEL%
 
 :1
@@ -74,11 +75,14 @@ GOTO 02%X%
 
 :020
 ECHO 说明：1．若您修改了相关服务导致某些功能不能正常使用，请继续；
-ECHO       2．重置服务不会对您的硬盘文件、系统有任何影响，请放心。
+ECHO       2．重置服务不会对您的硬盘文件、系统有任何影响，请放心；
+ECHO       3．修复激活死循环命令：RUNDLL32 syssetup,SetupOobeBnk。
 ECHO 您真的要重置服务吗？
 CHOICE /C YN
 IF %ERRORLEVEL%==2 (GOTO MAIN)
 CLS
+ECHO 正在修复激活死循环，请稍候...
+ECHO RUNDLL32 syssetup,SetupOobeBnk
 ECHO 正在重置服务，请稍候...
 SC CONFIG Alerter START= DISABLED 
 SC CONFIG ALG START= DEMAND 
@@ -680,5 +684,22 @@ IF %ERRORLEVEL%==1 (REG ADD HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\Current
 ECHO 正在重启资源管理器，请稍候...
 TASKKILL /IM EXPLORER.EXE /F
 START /REALTIME "" EXPLORER
+PAUSE
+GOTO MAIN
+
+:25
+ECHO 恢复或删除“Shift键+右键”的从此处启动命令提示符？
+CHOICE /C YNC /M "Y=恢复，N=删除，C=取消"
+IF %ERRORLEVEL%==3 (GOTO MAIN)
+IF %ERRORLEVEL%==1 (
+	REG ADD "HKCR\Directory\Background\shell\cmd" /VE /T REG_SZ /D "@shell32.dll,-8506" /F
+	REG ADD "HKCR\Directory\Background\shell\cmd" /V Extended /T REG_SZ /D "" /F
+	REG ADD "HKCR\Directory\Background\shell\cmd" /V NoWorkingDirectory /T REG_SZ /D "" /F
+	REG ADD "HKCR\Directory\Background\shell\cmd" /V ShowBasedOnVelocityId /T REG_DWORD /D "0x00639bc8" /F
+	REG ADD "HKCR\Directory\Background\shell\cmd\command" /VE /T REG_SZ /D "cmd.exe /s /k pushd \"%V\"" /F
+	REG ADD "HKCR\Directory\Background\shell\cmd" /V Icon /T REG_SZ /D "%COMSPEC%" /F
+) ELSE (
+	REG DELETE "HKCR\Directory\Background\shell\cmd" /F
+)
 PAUSE
 GOTO MAIN
